@@ -2,17 +2,10 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
 
-const initialOrders = [
-  { id: 1, items: ['X-Burguer', 'Coca-Cola', 'X-Burguer'] },
-  { id: 2, items: ['Pizza', 'Suco de Laranja', 'Pizza', 'Pizza'] },
-  { id: 3, items: ['Batata Frita', 'Hambúrguer', 'Coca-Cola'] },
-  { id: 4, items: ['Batata Frita', 'Hambúrguer', 'Coca-Cola'] },
-  { id: 5, items: ['Batata Frita', 'Hambúrguer','Hambúrguer', 'Coca-Cola'] },
-  { id: 6, items: ['Batata Frita','Coca-Cola'] }
-];
+import mockupOrder from '../components/mockups/orders-mockup';
 
 export default function KitchenOrdersScreen() {
-  const [orders, setOrders] = useState(initialOrders);
+  const [orders, setOrders] = useState(mockupOrder);
 
   return (
     <View style={styles.container}>
