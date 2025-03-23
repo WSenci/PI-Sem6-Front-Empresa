@@ -1,5 +1,4 @@
 import { IPedido } from "../interfaces"
-import { ObjectId } from "mongodb"
 
 const mockupOrder2 = [
     { id: 1, items: ['X-Burguer', 'Coca-Cola', 'X-Burguer'] },

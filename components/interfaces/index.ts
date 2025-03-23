@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb'
-
 export interface IProduto {
     _id: string
     nome: string
