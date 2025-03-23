@@ -10,7 +10,7 @@ const mockupOrder2 = [
     { id: 6, items: ['Batata Frita', 'Coca-Cola'] }
 ]
 
-const mockupOrder: IPedido[] = [
+export const mockupOrder: IPedido[] = [
     {
         _id: '67be656f821074d98495c259',
         cod_mesa: 5,
@@ -26,5 +26,3 @@ const mockupOrder: IPedido[] = [
         total: 28
     }
 ]
-
-export default mockupOrder2

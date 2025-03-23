@@ -2,10 +2,21 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
 
-import mockupOrder from '../../components/mockups/orders-mockup';
+import { mockupOrder } from '../../components/mockups/orders-mockup';
+
+/*
+Pensar em como o sistema vai atualizar os pedidos feitos pelo cardapio, quando forem feitos
+
+Trocar cor do item já realizado pela cozinha?
+
+*/
 
 export default function KitchenOrdersScreen() {
   const [orders, setOrders] = useState(mockupOrder);
+
+  function getHourFromDate(date: Date): string {
+    return date.toISOString().split('T')[1].split('.')[0]
+  }
 
   return (
     <View style={styles.container}>
@@ -16,10 +27,10 @@ export default function KitchenOrdersScreen() {
       
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {orders.map((order) => (
-          <View key={order.id} style={styles.orderCard}>
-            <Text style={styles.orderNumber}>Pedido {order.id}</Text>
-            {order.items.map((item, index) => (
-              <Text key={index} style={styles.itemText}>{item}</Text>
+          <View key={order._id} style={styles.orderCard}>
+            <Text style={styles.orderNumber}>{getHourFromDate(order.data_pedido)}</Text>
+            {order.produtos.map((item, index) => (
+              <Text key={index} style={styles.itemText}>{item.nome}</Text>
             ))}
           </View>
         ))}
