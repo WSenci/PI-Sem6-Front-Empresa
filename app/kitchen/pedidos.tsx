@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
 
-import mockupOrder from '../components/mockups/orders-mockup';
+import mockupOrder from '../../components/mockups/orders-mockup';
 
 export default function KitchenOrdersScreen() {
   const [orders, setOrders] = useState(mockupOrder);

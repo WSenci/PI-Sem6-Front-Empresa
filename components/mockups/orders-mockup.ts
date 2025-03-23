@@ -12,7 +12,7 @@ const mockupOrder2 = [
 
 const mockupOrder: IPedido[] = [
     {
-        _id: new ObjectId('67be656f821074d98495c259'),
+        _id: '67be656f821074d98495c259',
         cod_mesa: 5,
         cod_comanda: 2,
         produtos: 

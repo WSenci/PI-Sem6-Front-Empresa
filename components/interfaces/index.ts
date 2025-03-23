@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 
 export interface IProduto {
-    _id: ObjectId
+    _id: string
     nome: string
     preco: number
     tipo: string
@@ -14,15 +14,14 @@ export interface IProdutoCom {
     preco: number
     tipo: string
     desc?: string
-    img?: string // não?
     comment?: string
 }
 
 export interface IPedido {
-    _id: ObjectId
+    _id: string
     cod_mesa: number
     cod_comanda: number
-    produtos: IProdutoCom[] // img? id?
+    produtos: IProdutoCom[]
     data_pedido: Date
     entregue: boolean
     pago: boolean
