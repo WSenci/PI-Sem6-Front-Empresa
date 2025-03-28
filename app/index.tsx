@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, View } from 'react-native';
+import ImageToBase64 from '../components/image-to-b64/image-to-b64';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         title="Pagamento do Pedido"
         color="#841584"
       />
+      {/* <ImageToBase64/> */}
       <StatusBar style="auto" />
     </View>
   );
