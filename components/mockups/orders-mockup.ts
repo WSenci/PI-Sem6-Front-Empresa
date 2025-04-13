@@ -19,7 +19,7 @@ export const mockupOrder: IPedido[] = [
             {nome: 'X-burger', preco: 20, tipo:'Lanche', desc:'Pão de hamburger, carne de hamburger 90g, queijo mussarela, molho da casa e alface.'},
             {nome: 'Batata Frita Média', preco: 8, tipo:'Acompanhamento', desc:'Porção média de batata frita', comment:'Adicionar cheddar'}
         ],
-        data_pedido: new Date('2025-02-25T03:00:00.000+00:00'),
+        data_pedido: '2025-02-25T03:00:00.000+00:00',
         entregue: false,
         pago: false,
         total: 28

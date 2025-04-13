@@ -20,7 +20,7 @@ export interface IPedido {
     cod_mesa: number
     cod_comanda: number
     produtos: IProdutoCom[]
-    data_pedido: Date
+    data_pedido: string
     entregue: boolean
     pago: boolean
     total:number

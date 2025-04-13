@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView, Modal, TextInput, Button, TouchableWithoutFeedback } from 'react-native';
 import { SButtonItemCozinha } from '../../components/styled-button';
-
 import { mockupOrder } from '../../components/mockups/orders-mockup';
-import { IProdutoCom } from '../../components/interfaces';
+import { IPedido, IProdutoCom } from '../../components/interfaces';
+import api from '../../helpers/axios'
 
 /*
 Pensar em como o sistema vai atualizar os pedidos feitos pelo cardapio, quando forem feitos
@@ -14,13 +14,35 @@ Trocar cor do item já realizado pela cozinha?
 */
 
 export default function KitchenOrdersScreen() {
-  const [orders, setOrders] = useState(mockupOrder);
+  const [orders, setOrders] = useState<IPedido[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [orderItem, setOrderItem] = useState<IProdutoCom>({ nome: '', preco: 0, tipo: '', comment: '', desc: '' })
 
-  function getHourFromDate(date: Date): string {
-    return date.toISOString().split('T')[1].split('.')[0]
+  function getHourFromDate(date: string): string {
+    try {
+      const parsedDate = new Date(date)
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error("Data inválida")
+      }
+  
+      return parsedDate.toTimeString().split(' ')[0]
+    } catch (error) {
+      console.error("Erro ao extrair hora:", error)
+      return ""
+    }
   }
+
+  function update() {
+    const fetchOrders = async () => {
+      try {
+        const response = await api.get('/order/pending')
+        setOrders(response.data)
+        console.log(response.data)
+      } catch(e) { console.log("ERRO: " + e) }
+    } 
+    fetchOrders()
+  }
+  useEffect(()=>{ update() }, [])
 
   return (
     <View style={styles.container}>
@@ -37,9 +59,9 @@ export default function KitchenOrdersScreen() {
           <View key={order._id} style={styles.orderCard}>
 
             <Text style={styles.orderNumber}>{getHourFromDate(order.data_pedido)}</Text>
-            {order.produtos.map((item) => (
+            {order.produtos.map((item, index) => (
 
-              <View>
+              <View key={index}>
                 <SButtonItemCozinha item={item} onClick={() => {
                   setModalVisible(true)
                   setOrderItem(item)
