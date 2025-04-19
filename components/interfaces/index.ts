@@ -25,3 +25,7 @@ export interface IPedido {
     pago: boolean
     total:number
 }
+
+export interface IPedidos {
+    items: IPedido[]
+}
