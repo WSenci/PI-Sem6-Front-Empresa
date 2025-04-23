@@ -1,8 +1,9 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native'
 import { IProduto } from '../../components/interfaces'
 import { mockupProduto } from '../../components/mockups/product-mockup'
 import FormProduct from '../../components/forms/form-product/form-product'
 import React, { useState } from 'react'
+
 
 export default function Product() 
 {
@@ -14,6 +15,8 @@ export default function Product()
       const [type, onChangeType] = useState('')
       const [desc, onChangeDesc] = useState('')
       const [img, onChangeImg] = useState('')
+      const [modalVisible, setModalVisible] = useState(false);
+
 
       const adicionar = () => {
         const novoProduto = {
@@ -35,7 +38,7 @@ export default function Product()
       <Text style={styles.cardText}>Tipo: {produto.tipo}</Text>
       <Text style={styles.cardText}>Descrição: {produto.desc}</Text>
       <Text style={styles.cardText}>Imagem: {produto.img}</Text>
-      <TouchableOpacity style={styles.editButton}>
+      <TouchableOpacity style={styles.editButton} onPress={()=>setModalVisible(true)}>
         <Text style={styles.editText}>Editar</Text>
       </TouchableOpacity>
     </View>
@@ -49,8 +52,17 @@ export default function Product()
         <ScrollView style={styles.list}>
           {listaProdutos}
         </ScrollView>
-      
+        <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}
+    >
+          <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} onSubmit={adicionar} submitLabel={'Editar'} />
+
+      </Modal>
       </View>
+     
 
   )
 }
