@@ -1,36 +1,32 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import { IProduto } from '../../components/interfaces'
 import { mockupProduto } from '../../components/mockups/product-mockup'
+import FormProduct from '../../components/forms/form-product/form-product'
 import React, { useState } from 'react'
 
-export default function Product() {
-  const [name, onChangeName] = useState('')
-  const [price, onChangePrice] = useState('')
-  const [type, onChangeType] = useState('')
-  const [desc, onChangeDesc] = useState('')
-  const [img, onChangeImg] = useState('')
-
+export default function Product() 
+{
+  
   const [produtos, setProdutos] = useState<IProduto[]>(mockupProduto)
 
-  const adicionar = () => {
-    const novoProduto = {
-      _id: String(produtos.length + 1),
-      nome: name,
-      preco: Number(price),
-      tipo: type,
-      desc: desc,
-      img: img
-    }
+      const [name, onChangeName] = useState('')
+      const [price, onChangePrice] = useState('')
+      const [type, onChangeType] = useState('')
+      const [desc, onChangeDesc] = useState('')
+      const [img, onChangeImg] = useState('')
 
-    setProdutos([...produtos, novoProduto])
-
-    // Limpa os campos depois de adicionar
-    onChangeName('')
-    onChangePrice('')
-    onChangeType('')
-    onChangeDesc('')
-    onChangeImg('')
-  }
+      const adicionar = () => {
+        const novoProduto = {
+          _id: String(produtos.length + 1),
+          nome: name,
+          preco: Number(price),
+          tipo: type,
+          desc: desc,
+          img: img
+        }
+      
+        setProdutos([...produtos, novoProduto])
+      }
 
   const listaProdutos = produtos.map((produto, index) => (
     <View key={index} style={styles.card}>
@@ -47,35 +43,18 @@ export default function Product() {
 
   return (
     <View style={styles.container}>
-      {/* Formulário */}
-      <View style={styles.form}>
-        <Text style={styles.label}>Nome</Text>
-        <TextInput style={styles.input} onChangeText={onChangeName} value={name} />
 
-        <Text style={styles.label}>Preço</Text>
-        <TextInput style={styles.input} keyboardType="numeric" onChangeText={onChangePrice} value={price} />
-
-        <Text style={styles.label}>Tipo</Text>
-        <TextInput style={styles.input} onChangeText={onChangeType} value={type} />
-
-        <Text style={styles.label}>Descrição</Text>
-        <TextInput style={styles.input} onChangeText={onChangeDesc} value={desc} />
-
-        <Text style={styles.label}>Imagem (URL)</Text>
-        <TextInput style={styles.input} onChangeText={onChangeImg} value={img} />
-
-        <TouchableOpacity style={styles.button} onPress={adicionar}>
-          <Text style={styles.buttonText}>Adicionar</Text>
-        </TouchableOpacity>
+    <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} onSubmit={adicionar} submitLabel={'Adicionar'} />
+        {/* Lista de Produtos */}
+        <ScrollView style={styles.list}>
+          {listaProdutos}
+        </ScrollView>
+      
       </View>
 
-      {/* Lista de Produtos */}
-      <ScrollView style={styles.list}>
-        {listaProdutos}
-      </ScrollView>
-    </View>
   )
 }
+
 
 const styles = StyleSheet.create({
   container: {
