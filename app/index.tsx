@@ -17,6 +17,11 @@ export default function App() {
         title="Pagamento do Pedido"
         color="#841584"
       />
+      <Button
+        onPress={() => { router.navigate("/product/product") }}
+        title="Produtos"
+        color="#841584"
+      />
       {/* <ImageToBase64/> */}
       <StatusBar style="auto" />
     </View>
