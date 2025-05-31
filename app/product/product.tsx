@@ -15,7 +15,7 @@ export default function Product()
       const [type, onChangeType] = useState('')
       const [desc, onChangeDesc] = useState('')
       const [img, onChangeImg] = useState('')
-      const [modalVisible, setModalVisible] = useState(false);
+      const [modalVisible, setModalVisible] = useState(false)
 
 
       const adicionar = () => {
