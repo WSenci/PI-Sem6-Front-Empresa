@@ -8,18 +8,31 @@ import api from '../../helpers/axios'
 async function getProducts(){
   const response = await api.get('/product')
   if (response.status == 200){
-    return response.data; // retorna os dados da API
+    return response.data; 
   }
   else{
   return []
   }
 }
 
+
 async function postProduct(produto: any) {
   try {
     const response = await api.post('/product', produto);
     if (response.status === 201 || response.status === 200) {
-      return response.data; // ou true, se quiser só saber que deu certo
+      return response.data; 
+    }
+  } catch (error) {
+    console.error('Erro ao adicionar produto:', error);
+  }
+}
+
+async function putProduct(produto: any) {
+  try {
+    const response = await api.put(`/product/${produto._id}`, produto);
+    if (response.status === 201 || response.status === 200) {
+      return response.data; 
+      
     }
   } catch (error) {
     console.error('Erro ao adicionar produto:', error);
@@ -38,9 +51,27 @@ export default function Product()
       const [type, onChangeType] = useState('')
       const [desc, onChangeDesc] = useState('')
       const [img, onChangeImg] = useState('')
+      const [id, onChangeId] = useState('')
       const [modalVisible, setModalVisible] = useState(false)
 
       function handleCreateProduct() {
+        const novoProduto = {
+          nome: name,
+          preco: Number(price),
+          tipo: type,
+          desc: desc,
+          img: img,
+        };
+      
+        postProduct(novoProduto).then(() => {
+          alert('Produto criado com sucesso!');
+          setModalVisible(false); // por exemplo
+          // Recarregar a lista de produtos:
+          getProducts().then(setProdutos);
+        });
+      }
+      
+      function updateProduct() {
         const novoProduto = {
           nome: name,
           preco: Number(price),
@@ -79,18 +110,23 @@ export default function Product()
           fetchProdutos();
         }, []);
 
-  const listaProdutos = produtos.map((produto, index) => (
-    <View key={index} style={styles.card}>
-      <Text style={styles.cardText}>Nome: {produto.nome}</Text>
-      <Text style={styles.cardText}>Preço: R$ {produto.preco}</Text>
-      <Text style={styles.cardText}>Tipo: {produto.tipo}</Text>
-      <Text style={styles.cardText}>Descrição: {produto.desc}</Text>
-      <Text style={styles.cardText}>Imagem: {produto.img}</Text>
-      <TouchableOpacity style={styles.editButton} onPress={()=>setModalVisible(true)}>
-        <Text style={styles.editText}>Editar</Text>
-      </TouchableOpacity>
-    </View>
-  ))
+        const listaProdutos = produtos.map((produto, index) => (
+          <View key={produto._id} style={styles.card}>
+            <Text style={styles.cardText}>Nome: {produto.nome}</Text>
+            <Text style={styles.cardText}>Preço: R$ {produto.preco}</Text>
+            <Text style={styles.cardText}>Tipo: {produto.tipo}</Text>
+            <Text style={styles.cardText}>Descrição: {produto.desc}</Text>
+            <Text style={styles.cardText}>Imagem: {produto.img}</Text>
+            <TouchableOpacity
+  style={styles.editButton}
+  onPress={() => {
+    setModalVisible(true);
+    onChangeId(produto._id);
+  }}>
+              <Text style={styles.editText}>Editar</Text>
+            </TouchableOpacity>
+          </View>
+        ))
 
   return (
     <View style={styles.container}>
@@ -106,7 +142,7 @@ export default function Product()
       visible={modalVisible}
       onRequestClose={() => setModalVisible(false)}
     >
-    <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} submitLabel={'Editar'} />
+    <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} onSubmit={updateProduct} submitLabel={'Editar'} />
 
       </Modal>
       </View>
