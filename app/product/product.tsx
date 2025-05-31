@@ -2,13 +2,23 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal 
 import { IProduto } from '../../components/interfaces'
 import { mockupProduto } from '../../components/mockups/product-mockup'
 import FormProduct from '../../components/forms/form-product/form-product'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import api from '../../helpers/axios'
 
+async function getProducts(){
+  const response = await api.get('/product')
+  if (response.status == 200){
+    return response.data; // retorna os dados da API
+  }
+  else{
+  return []
+  }
+}
 
 export default function Product() 
 {
   
-  const [produtos, setProdutos] = useState<IProduto[]>(mockupProduto)
+  const [produtos, setProdutos] = useState<IProduto[]>([])
 
       const [name, onChangeName] = useState('')
       const [price, onChangePrice] = useState('')
@@ -17,7 +27,7 @@ export default function Product()
       const [img, onChangeImg] = useState('')
       const [modalVisible, setModalVisible] = useState(false)
 
-
+      /*
       const adicionar = () => {
         const novoProduto = {
           _id: String(produtos.length + 1),
@@ -29,7 +39,16 @@ export default function Product()
         }
       
         setProdutos([...produtos, novoProduto])
-      }
+      }*/
+
+        useEffect(() => {
+          async function fetchProdutos() {
+            const data = await getProducts();
+            setProdutos(data);
+          }
+      
+          fetchProdutos();
+        }, []);
 
   const listaProdutos = produtos.map((produto, index) => (
     <View key={index} style={styles.card}>
@@ -47,7 +66,7 @@ export default function Product()
   return (
     <View style={styles.container}>
 
-    <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} onSubmit={adicionar} submitLabel={'Adicionar'} />
+    <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType}  submitLabel={'Adicionar'} />
         {/* Lista de Produtos */}
         <ScrollView style={styles.list}>
           {listaProdutos}
@@ -58,7 +77,7 @@ export default function Product()
       visible={modalVisible}
       onRequestClose={() => setModalVisible(false)}
     >
-          <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} onSubmit={adicionar} submitLabel={'Editar'} />
+          <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} submitLabel={'Editar'} />
 
       </Modal>
       </View>
