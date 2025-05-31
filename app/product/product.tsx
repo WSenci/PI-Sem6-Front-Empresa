@@ -15,6 +15,19 @@ async function getProducts(){
   }
 }
 
+async function postProduct(produto: any) {
+  try {
+    const response = await api.post('/product', produto);
+    if (response.status === 201 || response.status === 200) {
+      return response.data; // ou true, se quiser só saber que deu certo
+    }
+  } catch (error) {
+    console.error('Erro ao adicionar produto:', error);
+  }
+}
+
+
+
 export default function Product() 
 {
   
@@ -27,6 +40,22 @@ export default function Product()
       const [img, onChangeImg] = useState('')
       const [modalVisible, setModalVisible] = useState(false)
 
+      function handleCreateProduct() {
+        const novoProduto = {
+          nome: name,
+          preco: Number(price),
+          tipo: type,
+          desc: desc,
+          img: img,
+        };
+      
+        postProduct(novoProduto).then(() => {
+          alert('Produto criado com sucesso!');
+          setModalVisible(false); // por exemplo
+          // Recarregar a lista de produtos:
+          getProducts().then(setProdutos);
+        });
+      }
       /*
       const adicionar = () => {
         const novoProduto = {
@@ -66,7 +95,7 @@ export default function Product()
   return (
     <View style={styles.container}>
 
-    <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType}  submitLabel={'Adicionar'} />
+    <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} onSubmit={handleCreateProduct} submitLabel={'Adicionar'} />
         {/* Lista de Produtos */}
         <ScrollView style={styles.list}>
           {listaProdutos}
@@ -77,7 +106,7 @@ export default function Product()
       visible={modalVisible}
       onRequestClose={() => setModalVisible(false)}
     >
-          <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} submitLabel={'Editar'} />
+    <FormProduct name={name} price={price} type={type} desc={desc} img={img} onChangeName={onChangeName} onChangeDesc={onChangeDesc} onChangeImg={onChangeImg} onChangePrice={onChangePrice} onChangeType={onChangeType} submitLabel={'Editar'} />
 
       </Modal>
       </View>
