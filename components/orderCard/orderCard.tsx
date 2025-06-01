@@ -1,78 +1,115 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, Modal, TextInput, Button, StyleSheet, TouchableWithoutFeedback } from "react-native";
-import { IPedido, IPedidos, IProdutoCom } from "../interfaces";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { IPedido } from "../interfaces";
 
-interface OrderCard {
-    item: IPedido
+function getFormattedDateTime(dateString: string): string {
+  try {
+    const data = new Date(dateString);
+    if (isNaN(data.getTime())) {
+      throw new Error("Invalid date");
+    }
+    const hours = String(data.getUTCHours()).padStart(2, '0');
+    const minutes = String(data.getUTCMinutes()).padStart(2, '0');
+    const fullTime = `${hours}:${minutes}`;
+    const day = String(data.getUTCDate()).padStart(2, '0');
+    const month = String(data.getUTCMonth() + 1).padStart(2, '0');
+    const year = data.getUTCFullYear();
+    const fullDate = `${day}/${month}/${year}`;
+
+    return `${fullTime} - ${fullDate}`;
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "";
+  }
 }
 
-export default function OrderCard({item}: {item: IPedido}) {
+export default function OrderCard({ item }: { item: IPedido }) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <Text style={styles.date}>{getFormattedDateTime(item.data_pedido)}</Text>
+        <Text style={styles.table}>Table: {item.cod_mesa}</Text>
+      </View>
 
-    function getFormattedDateTime(dateString: string): string {
-        try {
-          const data = new Date(dateString)
-          if (isNaN(data.getTime())) {
-            throw new Error("Data inválida")
-          }
-          const hora = String(data.getUTCHours()).padStart(2, '0')
-          const minutos = String(data.getUTCMinutes()).padStart(2, '0')
-          const horaCompleta = `${hora}:${minutos}`
-          const dia = String(data.getUTCDate()).padStart(2, '0')
-          const mes = String(data.getUTCMonth() + 1).padStart(2, '0')
-          const ano = data.getUTCFullYear()
-          const dataCompleta = `${dia}/${mes}/${ano}`
-      
-          return `${horaCompleta} - ${dataCompleta}`
-        } catch (error) {
-          console.error("Erro ao formatar data:", error)
-          return ""
-        }
-      }
+      <View style={styles.orderItems}>
+        <Text style={styles.orderTitle}>Order Items:</Text>
+        {item.produtos.map((produto, index) => (
+          <View key={index} style={styles.itemContainer}>
+            <Text style={styles.itemName}>{produto.nome}</Text>
+            <Text style={styles.itemPrice}>R$ {produto.preco.toFixed(2)}</Text>
+          </View>
+        ))}
+      </View>
 
-    return (
-        <View style={styles.card}>
-            <Text style={styles.data}>{getFormattedDateTime(item.data_pedido)}</Text>
-            <Text style={styles.mesa}>{"Mesa: "}{item.cod_mesa}</Text>
-            <Text style={styles.order}>{"Pedido: "}</Text>
-            {item.produtos.map((item, index) => (
-                <View key={index} >
-                    <Text style={styles.order}>{"    "}{item.nome} {" - R$ "} {item.preco}</Text>
-                </View>
-            ))}
-            <Text style={styles.price}>{"Subtotal: R$"} {item.total.toFixed(2)}</Text>
-        </View >
-    );
+      <View style={styles.footer}>
+        <Text style={styles.total}>Subtotal: R$ {item.total.toFixed(2)}</Text>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    card: {
-        width: "100%",
-        height: 150,
-        backgroundColor: "#fff",
-        padding: 10,
-        borderRadius: 10,
-        alignItems: "flex-start",
-        margin: 10,
-        elevation: 3,
-    },
-    data: {
-        fontFamily: "arial",
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-    mesa: {
-        fontFamily: "arial",
-        fontSize: 16,
-    },
-    order: {
-        fontFamily: "arial",
-        fontSize: 16,
-        marginTop: 2,
-    },
-    price: {
-        fontFamily: "arial",
-        fontSize: 16,
-        color: "green",
-        marginTop: 2,
-    },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginBottom: 16,
+    padding: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  header: {
+    marginBottom: 16,
+  },
+  date: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+  },
+  table: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  orderItems: {
+    marginBottom: 16,
+  },
+  orderTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#1a1a1a',
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  itemName: {
+    fontSize: 14,
+    color: '#333',
+    flex: 1,
+  },
+  itemPrice: {
+    fontSize: 14,
+    color: '#2c3e50',
+    fontWeight: '500',
+  },
+  footer: {
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    paddingTop: 8,
+  },
+  total: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    textAlign: 'right',
+  },
 });

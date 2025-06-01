@@ -1,97 +1,95 @@
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView, Modal, TextInput, Button, TouchableWithoutFeedback } from 'react-native';
-import { SButtonItemCozinha } from '../../components/styled-button';
-import { mockupOrder } from '../../components/mockups/orders-mockup';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, TouchableWithoutFeedback } from 'react-native';
+import { Button } from 'react-native-paper';
 import { IPedido, IProdutoCom } from '../../components/interfaces';
-import api from '../../helpers/axios'
-
-/*
-Pensar em como o sistema vai atualizar os pedidos feitos pelo cardapio, quando forem feitos
-
-Trocar cor do item já realizado pela cozinha?
-
-*/
+import api from '../../helpers/axios';
 
 export default function KitchenOrdersScreen() {
   const [orders, setOrders] = useState<IPedido[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [orderItem, setOrderItem] = useState<IProdutoCom>({ nome: '', preco: 0, tipo: '', comment: '', desc: '' })
+  const [orderItem, setOrderItem] = useState<IProdutoCom>({ nome: '', preco: 0, tipo: '', comment: '', desc: '' });
 
   function getHourFromDate(date: string): string {
     try {
-      const parsedDate = new Date(date)
+      const parsedDate = new Date(date);
       if (isNaN(parsedDate.getTime())) {
-        throw new Error("Data inválida")
+        throw new Error("Invalid date");
       }
-  
-      return parsedDate.toTimeString().split(' ')[0]
+      return parsedDate.toTimeString().split(' ')[0];
     } catch (error) {
-      console.error("Erro ao extrair hora:", error)
-      return ""
+      console.error("Error extracting time:", error);
+      return "";
     }
   }
 
   function update() {
     const fetchOrders = async () => {
       try {
-        const response = await api.get('/order/pending')
-        setOrders(response.data)
-        console.log(response.data)
-      } catch(e) { console.log("ERRO: " + e) }
-    } 
-    fetchOrders()
+        const response = await api.get('/order/pending');
+        setOrders(response.data);
+      } catch(e) {
+        console.log("ERROR: " + e);
+      }
+    };
+    fetchOrders();
   }
-  useEffect(()=>{ update() }, [])
+
+  useEffect(() => { update(); }, []);
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Button
+          mode="contained"
+          onPress={() => router.navigate("/")}
+          style={styles.backButton}
+          labelStyle={styles.buttonLabel}
+        >
+          Back
+        </Button>
+        <Text style={styles.title}>Kitchen Orders</Text>
+      </View>
 
-      <TouchableOpacity style={styles.homeButton} onPress={() => router.navigate("/")}>
-        <Text style={styles.homeButtonText}>Voltar</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.title}>Pedidos na Cozinha</Text>
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.ordersContainer}>
         {orders.map((order) => (
-
           <View key={order._id} style={styles.orderCard}>
-
-            <Text style={styles.orderNumber}>{getHourFromDate(order.data_pedido)}</Text>
+            <Text style={styles.orderTime}>{getHourFromDate(order.data_pedido)}</Text>
             {order.produtos.map((item, index) => (
-
-              <View key={index}>
-                <SButtonItemCozinha item={item} onClick={() => {
-                  setModalVisible(true)
-                  setOrderItem(item)
-                }} />
-              </View>
-
+              <TouchableOpacity
+                key={index}
+                style={[styles.itemButton, item.comment ? styles.itemWithComment : null]}
+                onPress={() => {
+                  setModalVisible(true);
+                  setOrderItem(item);
+                }}
+              >
+                <Text style={styles.itemName}>{item.nome}</Text>
+                {item.comment && <Text style={styles.itemComment}>{item.comment}</Text>}
+              </TouchableOpacity>
             ))}
           </View>
-
         ))}
       </ScrollView>
 
-
-      <Modal visible={modalVisible} animationType="slide" transparent={true}>
+      <Modal visible={modalVisible} animationType="fade" transparent={true}>
         <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modalContainer}>
-            <TouchableWithoutFeedback onPress={() => { }} >
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
-
                 <Text style={styles.modalTitle}>{orderItem.nome}</Text>
                 <Text style={styles.modalDescription}>{orderItem.desc}</Text>
-                <Text style={[styles.modalDescription, {fontWeight:'bold'}]}>{orderItem.comment}</Text>
-
-                <View style={{ flex: 1, flexDirection:'row', justifyContent:'space-evenly', width: '60%'}}>
-                  
-                  <TouchableOpacity onPress={() => setModalVisible(false)}>
-                    <Text style={{ color: 'red', fontSize: 20, backgroundColor: '#F5F5F5', borderRadius: 8 }}> X </Text>
-                  </TouchableOpacity>
-
-                </View>
+                {orderItem.comment && (
+                  <Text style={styles.modalComment}>{orderItem.comment}</Text>
+                )}
+                <Button
+                  mode="contained"
+                  onPress={() => setModalVisible(false)}
+                  style={styles.closeButton}
+                  labelStyle={styles.buttonLabel}
+                >
+                  Close
+                </Button>
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -102,33 +100,105 @@ export default function KitchenOrdersScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
-  homeButton: { backgroundColor: '#d9534f', padding: 10, borderRadius: 5, marginBottom: 20, alignSelf: 'flex-start' },
-  homeButtonText: { color: 'white', fontWeight: 'bold' },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  orderCard: { backgroundColor: 'white', padding: 15, marginHorizontal: 10, borderRadius: 8, elevation: 3, minWidth: 200 },
-  orderNumber: { fontSize: 20, fontWeight: 'bold', marginBottom: 10, alignSelf:'center'},
-  itemText: { fontSize: 16 },
-  modalContainer: {
+  container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  backButton: {
+    backgroundColor: '#2c3e50',
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+  buttonLabel: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 14,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+  },
+  ordersContainer: {
+    padding: 20,
+  },
+  orderCard: {
+    backgroundColor: 'white',
+    padding: 20,
+    marginRight: 16,
+    borderRadius: 12,
+    elevation: 3,
+    minWidth: 280,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  orderTime: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+    color: '#2c3e50',
+  },
+  itemButton: {
+    backgroundColor: '#f8f9fa',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  itemWithComment: {
+    backgroundColor: '#fff3cd',
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1a1a1a',
+  },
+  itemComment: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContent: {
-    width: 300,
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
+    backgroundColor: '#fff',
+    padding: 24,
+    borderRadius: 16,
+    width: '80%',
+    maxWidth: 400,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#1a1a1a',
   },
   modalDescription: {
-    fontSize: 14,
-    marginVertical: 10,
-    textAlign: "center",
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 12,
+  },
+  modalComment: {
+    fontSize: 16,
+    color: '#856404',
+    backgroundColor: '#fff3cd',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  closeButton: {
+    backgroundColor: '#2c3e50',
+    marginTop: 8,
   },
 });
