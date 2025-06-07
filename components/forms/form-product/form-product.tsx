@@ -2,6 +2,7 @@ import { useState } from "react"
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 
 interface Props {
+  _id?: string
   name: string
   price: string
   type: string
