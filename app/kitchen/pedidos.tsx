@@ -57,9 +57,9 @@ export default function KitchenOrdersScreen() {
           style={styles.backButton}
           labelStyle={styles.buttonLabel}
         >
-          Back
+          Voltar
         </Button>
-        <Text style={styles.title}>Kitchen Orders</Text>
+        <Text style={styles.title}>Ordens Cozinha</Text>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.ordersContainer}>
@@ -67,6 +67,7 @@ export default function KitchenOrdersScreen() {
           <View key={order._id} style={styles.orderCard}>
             <View style={styles.cardContent}>
               <Text style={styles.orderTime}>{getHourFromDate(order.data_pedido)}</Text>
+              <Text style={styles.orderTime}>Mesa: {order.cod_mesa}</Text>
               {order.produtos.map((item, index) => (
                 <TouchableOpacity
                   key={index}
