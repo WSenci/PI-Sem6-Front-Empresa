@@ -12,7 +12,7 @@ export default function PaymentScreen() {
     cod_mesa: 0,
     cod_comanda: 0,
     produtos: [{ nome: '', preco: 0, tipo: '', desc: '' }],
-    data_pedido: '',
+    data_pedido: '2025-02-01T03:00:00.000+00:00',
     entregue: false,
     pago: false,
     total: 0
@@ -22,10 +22,41 @@ export default function PaymentScreen() {
   async function fetchOrders() {
     try {
       const response = await api.get(`order/cmd/${command}`);
-      setOrders(response.data);
+      if(response.data[0] !== undefined) setOrders(response.data);
+      else setOrders([{
+        _id: '',
+        cod_mesa: 0,
+        cod_comanda: 0,
+        produtos: [{ nome: '', preco: 0, tipo: '', desc: '' }],
+        data_pedido: '2025-02-01T03:00:00.000+00:00',
+        entregue: false,
+        pago: false,
+        total: 0
+      }]);
     } catch (e) {
       console.log('Error: ' + e);
     }
+  }
+
+  async function orderComplete(orders: IPedido[]) {
+    orders.map(async order =>{
+      const updatedOrder: IPedido = { ...order, pago: true }
+      try {
+        await api.put(`/order/${order._id}`, updatedOrder)
+      } catch (e) {
+        console.log("ERROR: " + e)
+      }
+    })
+    setOrders([{
+      _id: '',
+      cod_mesa: 0,
+      cod_comanda: 0,
+      produtos: [{ nome: '', preco: 0, tipo: '', desc: '' }],
+      data_pedido: '2025-02-01T03:00:00.000+00:00',
+      entregue: false,
+      pago: false,
+      total: 0
+    }])
   }
 
   return (
@@ -37,9 +68,9 @@ export default function PaymentScreen() {
           style={styles.backButton}
           labelStyle={styles.buttonLabel}
         >
-          Back
+          Voltar
         </Button>
-        <Text style={styles.title}>Payment Processing</Text>
+        <Text style={styles.title}>Pagamento</Text>
       </View>
 
       <View style={styles.searchContainer}>
@@ -56,21 +87,31 @@ export default function PaymentScreen() {
           style={styles.searchButton}
           labelStyle={styles.buttonLabel}
         >
-          Search
+          Procurar
         </Button>
       </View>
 
+{orders[0]._id !== '' && (
       <ScrollView style={styles.ordersContainer}>
         {orders.map((order) => (
           <OrderCard key={order._id} item={order} />
         ))}
       </ScrollView>
-
+    )}
       <View style={styles.totalContainer}>
         <Text style={styles.totalText}>
           Total: R$ {orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
         </Text>
       </View>
+
+      <Button
+          mode="contained"
+          onPress={()=>orderComplete(orders)}
+          style={styles.searchButton}
+          labelStyle={styles.buttonLabel}
+        >
+          Finalizar
+        </Button>
     </View>
   );
 }
