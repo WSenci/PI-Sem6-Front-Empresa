@@ -1,41 +1,52 @@
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, TouchableWithoutFeedback } from 'react-native';
-import { Button } from 'react-native-paper';
-import { IPedido, IProdutoCom } from '../../components/interfaces';
-import api from '../../helpers/axios';
+import { router } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, TouchableWithoutFeedback } from 'react-native'
+import { Button } from 'react-native-paper'
+import { IPedido, IProdutoCom } from '../../components/interfaces'
+import api from '../../helpers/axios'
 
 export default function KitchenOrdersScreen() {
-  const [orders, setOrders] = useState<IPedido[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [orderItem, setOrderItem] = useState<IProdutoCom>({ nome: '', preco: 0, tipo: '', comment: '', desc: '' });
+  const [orders, setOrders] = useState<IPedido[]>([])
+  const [modalVisible, setModalVisible] = useState(false)
+  const [orderItem, setOrderItem] = useState<IProdutoCom>({ nome: '', preco: 0, tipo: '', comment: '', desc: '' })
 
   function getHourFromDate(date: string): string {
     try {
-      const parsedDate = new Date(date);
+      const parsedDate = new Date(date)
       if (isNaN(parsedDate.getTime())) {
-        throw new Error("Invalid date");
+        throw new Error("Invalid date")
       }
-      return parsedDate.toTimeString().split(' ')[0];
+      return parsedDate.toTimeString().split(' ')[0]
     } catch (error) {
-      console.error("Error extracting time:", error);
-      return "";
+      console.error("Error extracting time:", error)
+      return ""
     }
   }
 
   function update() {
     const fetchOrders = async () => {
       try {
-        const response = await api.get('/order/pending');
-        setOrders(response.data);
-      } catch(e) {
-        console.log("ERROR: " + e);
+        const response = await api.get('/order/pending')
+        setOrders(response.data)
+      } catch (e) {
+        console.log("ERROR: " + e)
       }
-    };
-    fetchOrders();
+    }
+    fetchOrders()
   }
 
-  useEffect(() => { update(); }, []);
+  async function orderComplete(order: IPedido) {
+    const updatedOrder: IPedido = { ...order, entregue: true }
+    try {
+      await api.put(`/order/${order._id}`, updatedOrder)
+    } catch (e) {
+      console.log("ERROR: " + e)
+    }
+
+    update()
+  }
+
+  useEffect(() => { update() }, [])
 
   return (
     <View style={styles.container}>
@@ -46,28 +57,41 @@ export default function KitchenOrdersScreen() {
           style={styles.backButton}
           labelStyle={styles.buttonLabel}
         >
-          Back
+          Voltar
         </Button>
-        <Text style={styles.title}>Kitchen Orders</Text>
+        <Text style={styles.title}>Ordens Cozinha</Text>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.ordersContainer}>
         {orders.map((order) => (
           <View key={order._id} style={styles.orderCard}>
-            <Text style={styles.orderTime}>{getHourFromDate(order.data_pedido)}</Text>
-            {order.produtos.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[styles.itemButton, item.comment ? styles.itemWithComment : null]}
-                onPress={() => {
-                  setModalVisible(true);
-                  setOrderItem(item);
-                }}
-              >
-                <Text style={styles.itemName}>{item.nome}</Text>
-                {item.comment && <Text style={styles.itemComment}>{item.comment}</Text>}
-              </TouchableOpacity>
-            ))}
+            <View style={styles.cardContent}>
+              <Text style={styles.orderTime}>{getHourFromDate(order.data_pedido)}</Text>
+              <Text style={styles.orderTime}>Mesa: {order.cod_mesa}</Text>
+              {order.produtos.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[styles.itemButton, item.comment ? styles.itemWithComment : null]}
+                  onPress={() => {
+                    setModalVisible(true)
+                    setOrderItem(item)
+                  }}
+                >
+                  <Text style={styles.itemName}>{item.nome}</Text>
+                  {item.comment && <Text style={styles.itemComment}>{item.comment}</Text>}
+                </TouchableOpacity>
+              ))}
+              <View style={styles.footer}>
+                <Button
+                  mode="contained"
+                  onPress={()=> orderComplete(order)}
+                  style={styles.closeButton}
+                  labelStyle={styles.buttonLabel}
+                >
+                  Finalizar
+                </Button>
+              </View>
+            </View>
           </View>
         ))}
       </ScrollView>
@@ -96,7 +120,7 @@ export default function KitchenOrdersScreen() {
         </TouchableWithoutFeedback>
       </Modal>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -118,6 +142,13 @@ const styles = StyleSheet.create({
   buttonLabel: {
     fontFamily: 'Inter-Bold',
     fontSize: 14,
+  },
+  cardContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+  },
+  footer: {
+    marginTop: 'auto',
   },
   title: {
     fontSize: 24,
@@ -201,4 +232,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#2c3e50',
     marginTop: 8,
   },
-});
+})

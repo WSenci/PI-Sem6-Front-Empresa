@@ -31,8 +31,8 @@ export default function App() {
         source={{ uri: 'https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg' }}
         style={styles.headerImage}
       />
-      <Text style={styles.title}>Restaurant Management</Text>
-      <Text style={styles.subtitle}>Staff Portal</Text>
+      <Text style={styles.title}>TabMenu</Text>
+      <Text style={styles.subtitle}>Área do Funcionário</Text>
       
       <View style={styles.buttonContainer}>
         <Button
@@ -42,7 +42,7 @@ export default function App() {
           contentStyle={styles.buttonContent}
           labelStyle={styles.buttonLabel}
         >
-          Kitchen Orders
+          Cozinha
         </Button>
         
         <Button
@@ -52,7 +52,7 @@ export default function App() {
           contentStyle={styles.buttonContent}
           labelStyle={styles.buttonLabel}
         >
-          Payment Processing
+          Pagamento
         </Button>
       </View>
     </View>

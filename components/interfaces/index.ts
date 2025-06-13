@@ -23,7 +23,7 @@ export interface IPedido {
     data_pedido: string
     entregue: boolean
     pago: boolean
-    total:number
+    total: number
 }
 
 export interface IPedidos {
