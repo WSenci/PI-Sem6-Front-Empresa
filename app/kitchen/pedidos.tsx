@@ -112,7 +112,7 @@ export default function KitchenOrdersScreen() {
                   style={styles.closeButton}
                   labelStyle={styles.buttonLabel}
                 >
-                  Close
+                  Fechar
                 </Button>
               </View>
             </TouchableWithoutFeedback>
