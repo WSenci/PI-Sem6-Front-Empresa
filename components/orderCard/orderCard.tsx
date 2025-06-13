@@ -28,11 +28,11 @@ export default function OrderCard({ item }: { item: IPedido }) {
     <View style={styles.card}>
       <View style={styles.header}>
         <Text style={styles.date}>{getFormattedDateTime(item.data_pedido)}</Text>
-        <Text style={styles.table}>Table: {item.cod_mesa}</Text>
+        <Text style={styles.table}>Mesa: {item.cod_mesa}</Text>
       </View>
 
       <View style={styles.orderItems}>
-        <Text style={styles.orderTitle}>Order Items:</Text>
+        <Text style={styles.orderTitle}>Pedido:</Text>
         {item.produtos.map((produto, index) => (
           <View key={index} style={styles.itemContainer}>
             <Text style={styles.itemName}>{produto.nome}</Text>
