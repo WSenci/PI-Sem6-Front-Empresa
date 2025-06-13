@@ -100,7 +100,7 @@ export default function PaymentScreen() {
     )}
       <View style={styles.totalContainer}>
         <Text style={styles.totalText}>
-          Total: R$ {orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
+          Total: R$ {orders.reduce((sum, order) => sum + Number(order.total), 0).toFixed(2)}
         </Text>
       </View>
 
